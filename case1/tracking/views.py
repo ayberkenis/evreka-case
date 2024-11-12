@@ -11,21 +11,21 @@ from django.core.exceptions import ValidationError
 from .exceptions import InvalidTimeException
 
 class DeviceDataAPI(APIView):
-   """
-    API view to receive device data and process it asynchronously.
+    """
+    post:
+    Receive device data and process it asynchronously.
 
-    Attributes:
-    serializer_class (DeviceDataInputSerializer): The serializer class used for validating and serializing the device data.
-    Methods:
-    post(request):
-    Handles POST requests to receive device data and process it asynchronously.
-    Args:
-    request (Request): The request object containing the device data.
-    Returns:
-    Response: A response with a message indicating that data has been received or a response with errors if the data is invalid.
-   
-   """
-   def post(self, request):
+    Accepts device data in JSON format (single object or array). The data is validated and passed
+    to a background task for processing.
+
+    Parameters:
+        - data (list or dict): A single device data object or an array of objects.
+
+    Responses:
+        202: Data successfully received and queued for processing.
+        400: Invalid input data.
+    """
+    def post(self, request):
         data_list = request.data if isinstance(request.data, list) else [request.data]
         serializer = DeviceDataInputSerializer(data=data_list, many=True)
         if serializer.is_valid():
@@ -38,23 +38,19 @@ class DeviceDataAPI(APIView):
 
 class DeviceDataListAPI(GenericAPIView):
     """
-    API view to retrieve a list of device data with optional filtering by device ID and date range.
-    Attributes:
-        serializer_class (DeviceDataSerializer): The serializer class used for serializing the device data.
-        pagination_class (PageNumberPagination): The pagination class used for paginating the device data.
-    Methods:
-        get(request):
-            Handles GET requests to retrieve the list of device data.
-            Args:
-                request (Request): The request object containing query parameters for filtering.
-            Returns:
-                Response: A paginated response with serialized device data or a response with serialized device data.
-        get_queryset(request):
-            Retrieves the queryset of device data with optional filtering by device ID and date range.
-            Args:
-                request (Request): The request object containing query parameters for filtering.
-            Returns:
-                QuerySet: A queryset of filtered device data ordered by timestamp in descending order.
+    get:
+    Retrieve a paginated list of device data.
+
+    Allows optional filtering by `device_id` and/or a date range (`start_date`, `end_date`).
+
+    Parameters:
+        - device_id (str): Filter results by device ID.
+        - start_date (str): Filter results starting from this date (inclusive).
+        - end_date (str): Filter results up to this date (inclusive).
+
+    Responses:
+        200: List of device data.
+        400: Invalid input parameters.
     """
     serializer_class = DeviceDataSerializer
     pagination_class = PageNumberPagination
@@ -91,7 +87,17 @@ class DeviceDataListAPI(GenericAPIView):
 
 class LatestDeviceDataAPI(APIView):
 
+    """
+    get:
+    Retrieve the latest device data for a specific device ID.
 
+    Parameters:
+        - device_id (str): The ID of the device to retrieve the latest data for.
+
+    Responses:
+        200: The latest device data for the given device ID.
+        404: No data found for the given device ID.
+    """
     def get(self, request, device_id):
         data = DeviceData.objects.filter(device_id=device_id).order_by('-timestamp').first()
         if data:
