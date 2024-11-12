@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'evreka_case1.wsgi.application'
 DATABASES = {
  'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'evreka_db',
-        'USER': 'root',
-        'PASSWORD': 'Ayberk1199.',
-        'HOST': 'localhost',
-        'PORT': '3306',
+'NAME': os.environ.get('MYSQL_DB', 'default_db_name'),
+        'USER': os.environ.get('MYSQL_USER', 'default_user'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'default_password'),
+        'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
+        'PORT': os.environ.get('DATABASE_PORT', '3306'),
     }
 }
 
