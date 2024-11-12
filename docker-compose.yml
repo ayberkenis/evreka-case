@@ -16,11 +16,6 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://guest@rabbitmq//
       - DJANGO_SETTINGS_MODULE=evreka_case1.settings
-    restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 120s
 
   celery:
     build: .
