@@ -34,7 +34,7 @@ class DeviceDataAPI(APIView):
             # Convert each item in validated_data to a dict
             validated_data = [dict(item) for item in serializer.validated_data]
             process_device_data.delay(validated_data)
-            return Response({'message': 'Data received'}, status=status.HTTP_202_ACCEPTED)
+            return Response({'message': 'Data received', 'data': validated_data}, status=status.HTTP_202_ACCEPTED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
