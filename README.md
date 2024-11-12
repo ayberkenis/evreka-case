@@ -125,3 +125,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 
 print(response.text)
 ```
+
+### Case 2 (TCP Tracking)
+
+First, I wanted to have 2 different projects for each case but I decided to have 2 seperate apps in single Django project to simplify the process for my developer experience and other developer's deployment process.
