@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_results',
     'tracking',
+    'tcp_tracking',
     'drf_yasg'
 ]
 
