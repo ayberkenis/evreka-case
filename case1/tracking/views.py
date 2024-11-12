@@ -9,6 +9,8 @@ from .models import DeviceData
 from .serializers import DeviceDataInputSerializer
 from django.core.exceptions import ValidationError
 from .exceptions import InvalidTimeException
+from dateutil.parser import parse
+from datetime import datetime
 
 class DeviceDataAPI(APIView):
     """
@@ -74,6 +76,21 @@ class DeviceDataListAPI(GenericAPIView):
             device_id = request.query_params.get('device_id')
 
             queryset = DeviceData.objects.all()
+
+            def parse_date(date_string):
+                if not date_string:
+                    return None
+                try:
+                    # Parse date using `dateutil.parser`
+                    return parse(date_string).date()
+                except ValueError:
+                    raise InvalidTimeException(f"Invalid date format: {date_string}")
+                
+            start_date = parse_date(start_date)
+            end_date = parse_date(end_date)
+            
+            if end_date:
+                end_date = datetime.combine(end_date, datetime.max.time())
 
             if device_id:
                 queryset = queryset.filter(device_id=device_id)
