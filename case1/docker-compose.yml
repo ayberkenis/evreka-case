@@ -51,6 +51,21 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  tcp_server:
+    build: .
+    command: python tcp_tracking/tcp_server.py
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+      - rabbitmq
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=amqp://guest@rabbitmq//
+      - DJANGO_SETTINGS_MODULE=evreka_case1.settings
+    ports:
+      - "9999:9999"
 volumes:
   db_data:
   rabbitmq_data:
