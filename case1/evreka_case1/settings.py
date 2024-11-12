@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'evreka_case1.wsgi.application'
 
 DATABASES = {
  'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'evreka_db',
-        'USER': 'evreka',
-        'PASSWORD': 'avaG5PCTwe8AfQ0n',
-        'HOST': 'db',
-        'PORT': '5432',
+        'USER': 'root',
+        'PASSWORD': 'Ayberk1199.',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

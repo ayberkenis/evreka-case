@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - CELERY_BROKER_URL=amqp://guest@rabbitmq//
+      - DJANGO_SETTINGS_MODULE=evreka_case1.settings
+
+  celery:
+    build: .
+    command: celery -A evreka_case1 worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - CELERY_BROKER_URL=amqp://guest@rabbitmq//
+      - DJANGO_SETTINGS_MODULE=evreka_case1.settings
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  db:
+    image: mysql
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=Ayberk1199.
+      - MYSQL_DB=evreka_db
+    ports:
+      - "3306:3306"
