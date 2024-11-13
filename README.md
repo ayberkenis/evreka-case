@@ -1,6 +1,6 @@
 # Evreka Case
 
-This case has been given by Evreka to me as a part of the recruitment process. I estimated to complete the tasks in 10-12 hours. I can tell that, I have completed both tasks in 8-10 hours.
+This case has been given by Evreka to me as a part of the recruitment process. I estimated to complete the tasks in 10-12 hours. I can tell that, I have completed both tasks in 14 hours.
 
 ## Table of Contents
 
@@ -311,9 +311,22 @@ echo {"device_id": "device123", "location": "123.456,78.901", "speed": "55.5"} |
 
 When deploying to production environment, host should allow TCP connections from `9999` and TCP/UDP from `8000` if not behind reverse proxy.
 
+You can simply run the composer command to build and run the case.
+
+```bash
+docker-compose up --build
+```
+
 ## [**Testing**](#testing)
 
 When testing, for security reasons you should grant **MYSQL_USER** Create Schema etc. privileges so it can create `test_{MYSQL_DATABASE}` and automatically test what's needed.
+
+```bash
+docker-compose run web python manage.py test
+```
+
+> [!CAUTION]
+> You have to give the following privileges to the MYSQL_USER defined in your .env file for testing purposes. This makes testing possible as default user has no privileges to create schema's on the server. Don't forget to revoke the privileges afterwards, otherwise it will make the database vulnerable to SQL attacks.
 
 ### [**Privileges**](#grant)
 
