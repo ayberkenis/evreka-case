@@ -50,6 +50,7 @@ You will need to create `.env` file in the root folder of the project. Below is 
 # .env
 MYSQL_USER=evreka_user
 MYSQL_PASSWORD=your_mysql_password
+MYSQL_ROOT_PASSWORD=your_mysql_root_password
 MYSQL_DB=evreka_db
 MYSQL_HOST=db
 MYSQL_PORT=3306
