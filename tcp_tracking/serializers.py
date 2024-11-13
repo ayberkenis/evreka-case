@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tcp_tracking.models import DeviceData
+from .models import DeviceData
 
 class DeviceDataSerializer(serializers.ModelSerializer):
     class Meta:
