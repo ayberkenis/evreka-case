@@ -53,24 +53,43 @@ class DeviceDataTests(TestCase):
         self.assertEqual(DeviceData.objects.first().device_id, "123")
 
 class TCPServerTests(TestCase):
-    @patch('socket.socket')
-    def test_handle_client_connection_valid_data(self, mock_socket):
+    def setUp(self):
+        """
+        Set up initial data for TCP server tests.
+        """
+        self.valid_data = [
+            {"device_id": "123", "location": "51.5074, -0.1278", "speed": 40},
+            {"device_id": "124", "location": "40.7128, -74.0060", "speed": 30}
+        ]
+        self.invalid_data = [
+            {"device_id": "125", "speed": 20},  # Missing location
+            {"location": "34.0522, -118.2437", "speed": 25}  # Missing device_id
+        ]
+        
+    @patch('tcp_tracking.tasks.process_tcp_data.delay')
+    def test_handle_client_connection_valid_data(self, mock_process_tcp_data):
         """
         Test handling client connection with valid data.
         """
         mock_client_socket = MagicMock()
-        mock_socket.return_value = mock_client_socket
-
+        
+        # Simulate valid JSON data
         data = json.dumps(self.valid_data)
         mock_client_socket.recv.return_value = data.encode('utf-8')
 
-        from tcp_tracking.server import handle_client_connection
+        # Call the server's client handler
+        from .tcp_server import handle_client_connection
         handle_client_connection(mock_client_socket)
 
+        # Verify data was sent to Celery task
+        mock_process_tcp_data.assert_called_once_with(self.valid_data)
+
+        # Check the response sent back to the client
         response = mock_client_socket.send.call_args[0][0]
         response_data = json.loads(response.decode('utf-8'))
         self.assertIn("message", response_data)
         self.assertEqual(response_data["message"], "Data received")
+
 
     @patch('socket.socket')
     def test_handle_client_connection_invalid_data(self, mock_socket):
@@ -83,7 +102,7 @@ class TCPServerTests(TestCase):
         data = json.dumps(self.invalid_data)
         mock_client_socket.recv.return_value = data.encode('utf-8')
 
-        from tcp_tracking.server import handle_client_connection
+        from .tcp_server import handle_client_connection
         handle_client_connection(mock_client_socket)
 
         response = mock_client_socket.send.call_args[0][0]
@@ -102,7 +121,7 @@ class TCPServerTests(TestCase):
         data = "{invalid_json:}"
         mock_client_socket.recv.return_value = data.encode('utf-8')
 
-        from tcp_tracking.server import handle_client_connection
+        from .tcp_server import handle_client_connection
         handle_client_connection(mock_client_socket)
 
         response = mock_client_socket.send.call_args[0][0]
