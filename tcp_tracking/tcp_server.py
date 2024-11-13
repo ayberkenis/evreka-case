@@ -81,8 +81,11 @@ def start_tcp_server():
     """
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((HOST, PORT))
-    server.listen(100)
+    server.listen(100) # Listen for 100 connections
     print(f'TCP server listening on {HOST}:{PORT}')
+
+    ### We're keeping the connection open for multiple clients
+    ### We also use threading to handle multiple clients concurrently
     while True:
         client_sock, address = server.accept()
         client_handler = threading.Thread(
